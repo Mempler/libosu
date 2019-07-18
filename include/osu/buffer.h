@@ -6,7 +6,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define S_OK 0x00;
+#define E_UNABLE_TO_READ_BEYOND_STREAM 0x05FF6587
+#define E_S_IS_NOT_AN_S 0x05FF6588
+
 #ifdef __cplusplus
+namespace osu {
 extern "C" {
 #endif
 
@@ -20,13 +25,20 @@ typedef struct {
 osu_buffer* make_buffer();
 void free_buffer(osu_buffer* pBuffer);
 
-size_t buff_write(osu_buffer* pDst,
+size_t buff_write(osu_buffer* pBuff,
     const void* pSrc, size_t pSrcSize);
 
-size_t buff_write_string(osu_buffer* pDst,
+size_t buff_write_string(osu_buffer* pBuff,
     const char* pSrc, size_t pSrcSize, bool pNullable);
 
+int buff_read(osu_buffer* pBuff,
+    void* pDst, size_t pSize);
+
+int buff_read_string(osu_buffer* pBuff,
+    char** pDst);
+
 #ifdef __cplusplus
+}
 }
 #endif
 
@@ -34,6 +46,7 @@ size_t buff_write_string(osu_buffer* pDst,
 
 #include <string>
 
+namespace osu {
 // C++ Wrapper
 class OsuBuffer
 {
@@ -47,8 +60,31 @@ public:
     size_t Write(const std::string& pSrc, bool pNullable = false) {
         return buff_write_string(this->buff, pSrc.c_str(), pSrc.length(), pNullable); }
 
+    template <class T>
+    T Read() {
+        T t;
+        int E = buff_read(this->buff, &t, sizeof(t));
+
+        if (E)
+            throw E;
+
+        return t;
+    }
+
     inline
-    size_t Write(const char* pSrc) { return Write(std::string(pSrc)); }
+    std::string ReadString() {
+        char* cp = nullptr;
+        int E = buff_read_string(this->buff, &cp);
+
+        if (E)
+            throw E;
+
+        return std::string(cp);
+    }
+
+    void SetPosition(int p) {
+        this->buff->position = p;
+    }
 
     inline
     void Print() {
@@ -61,12 +97,12 @@ public:
 private:
     osu_buffer* buff;
 };
+}
 
 #define D_BUFF_PRINTLN(buff) \
     { \
         buff.Print(); \
     }
-
 #else
 
 #define D_BUFF_PRINTLN(buff) \
