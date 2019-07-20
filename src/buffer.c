@@ -15,15 +15,18 @@ make_buffer() {
     return ret;
 }
 
-void
-free_buffer(osu_buffer* pBuffer) {
-    if ( pBuffer == NULL )
-        return;
+HRESULT
+free_buffer(osu_buffer** pBuffer) {
+    if ( pBuffer == NULL || *pBuffer == NULL)
+        return E_INVALID_POINTER;
 
-    if ( pBuffer->bytes != NULL )
-        free(pBuffer->bytes);
+    if ( (*pBuffer)->bytes != NULL )
+        free((*pBuffer)->bytes);
 
-    free (pBuffer);
+    free (*pBuffer);
+    *pBuffer = NULL; // Save Free, prevent USE AFTER FREE
+
+    return S_OK;
 }
 
 size_t
@@ -69,21 +72,21 @@ read_uleb128 (osu_buffer* pBuffer) {
 }
 
 size_t
-buff_write(osu_buffer* pDst,
+buff_write(osu_buffer* pBuff,
     const void* pSrc, size_t pSrcSize) {
     
-    if ( pDst == NULL )
+    if ( pBuff == NULL )
         return 0;
 
     size_t dstSize = 0;
 
-    pDst->bytes = realloc(pDst->bytes, pDst->bytes_len + pSrcSize);    
-    memcpy(pDst->bytes + pDst->position, pSrc, pSrcSize);
+    pBuff->bytes = realloc(pBuff->bytes, pBuff->bytes_len + pSrcSize);    
+    memcpy(pBuff->bytes + pBuff->position, pSrc, pSrcSize);
 
     dstSize += pSrcSize;
 
-    pDst->bytes_len += dstSize;
-    pDst->position += dstSize;
+    pBuff->bytes_len += dstSize;
+    pBuff->position += dstSize;
 
     return pSrcSize;
 }
@@ -114,15 +117,21 @@ buff_write_string(osu_buffer* pBuff,
 
 uint8_t
 seek_next(osu_buffer* pBuff) {
+    if (pBuff == NULL)
+        return 0;
+
     if ( pBuff->position + 1 > pBuff->bytes_len )
         return 0;
     
     return pBuff->bytes[pBuff->position + 1];
 }
 
-int
+HRESULT
 buff_read(osu_buffer* pBuff,
     void* pDst, size_t pSize) {
+    if (pBuff == NULL)
+        return E_INVALID_POINTER;
+
     if ( pBuff->position + pSize > pBuff->bytes_len )
         return E_UNABLE_TO_READ_BEYOND_STREAM;
     
@@ -132,9 +141,11 @@ buff_read(osu_buffer* pBuff,
     return S_OK;
 }
 
-int
+HRESULT
 buff_read_string(osu_buffer* pBuff,
     char** pDst) {
+    if (pBuff == NULL)
+        return E_INVALID_POINTER;
 
     if ( pBuff->position + 1 > pBuff->bytes_len )
         return E_UNABLE_TO_READ_BEYOND_STREAM;

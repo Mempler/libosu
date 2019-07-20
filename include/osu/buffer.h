@@ -5,10 +5,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
-
-#define S_OK 0x00;
-#define E_UNABLE_TO_READ_BEYOND_STREAM 0x05FF6587
-#define E_S_IS_NOT_AN_S 0x05FF6588
+#include "_err/err.h"
 
 #ifdef __cplusplus
 namespace osu {
@@ -23,7 +20,7 @@ typedef struct {
 } osu_buffer;
 
 osu_buffer* make_buffer();
-void free_buffer(osu_buffer* pBuffer);
+HRESULT free_buffer(osu_buffer** pBuffer);
 
 size_t buff_write(osu_buffer* pBuff,
     const void* pSrc, size_t pSrcSize);
@@ -31,10 +28,10 @@ size_t buff_write(osu_buffer* pBuff,
 size_t buff_write_string(osu_buffer* pBuff,
     const char* pSrc, size_t pSrcSize, bool pNullable);
 
-int buff_read(osu_buffer* pBuff,
+HRESULT buff_read(osu_buffer* pBuff,
     void* pDst, size_t pSize);
 
-int buff_read_string(osu_buffer* pBuff,
+HRESULT buff_read_string(osu_buffer* pBuff,
     char** pDst);
 
 #ifdef __cplusplus
@@ -52,7 +49,7 @@ class OsuBuffer
 {
 public:
     inline OsuBuffer()  { this->buff = make_buffer(); }
-    inline ~OsuBuffer() { free_buffer(this->buff);    }
+    inline ~OsuBuffer() { free_buffer(&this->buff);    }
 
     template <class T>
     size_t Write(T pSrc) { return buff_write(this->buff, &pSrc, sizeof(pSrc)); }
