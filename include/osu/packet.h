@@ -4,27 +4,22 @@
 #include "_err/err.h"
 #include "buffer.h"
 #include "packet_id.h"
+#include "inc.h"
 
-#ifdef __cplusplus
-namespace osu {
-extern "C" {
-#endif
+OSU_NAMESPACE_BEGIN
 
 typedef struct
 {
-    packet_id  id;
+    packet_id   id;
     osu_buffer* data;
 } osu_packet;
 
 // This will also free the packet!
-HRESULT buff_write_packet(osu_buffer* pBuff,
-    osu_packet* pPacket);
+HRESULT buff_write_packet(osu_buffer* pBuff, osu_packet** pPacket);
 
+osu_packet* packet_create(packet_id pId);
 HRESULT packet_free(osu_packet** pPacket);
 
-#ifdef __cplusplus
-}
-}
-#endif
+OSU_NAMESPACE_END
 
 #endif

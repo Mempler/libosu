@@ -1,7 +1,7 @@
 #ifndef _H_LIB_OSU__ERR_ERR
 #define _H_LIB_OSU__ERR_ERR
 
-#define S_OK 0x00;
+#define S_OK 0x00
 #define E_UNABLE_TO_READ_BEYOND_STREAM 0x05FF6587
 #define E_S_IS_NOT_AN_S 0x05FF6588
 #define E_INVALID_POINTER 0x5FF6589

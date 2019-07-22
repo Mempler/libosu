@@ -49,7 +49,12 @@ class OsuBuffer
 {
 public:
     inline OsuBuffer()  { this->buff = make_buffer(); }
-    inline ~OsuBuffer() { free_buffer(&this->buff);    }
+    inline ~OsuBuffer() {
+        if (this->buff != nullptr)
+            free_buffer(&this->buff);
+        
+        this->buff = nullptr;
+    }
 
     template <class T>
     size_t Write(T pSrc) { return buff_write(this->buff, &pSrc, sizeof(pSrc)); }
@@ -79,8 +84,14 @@ public:
         return std::string(cp);
     }
 
+    inline
     void SetPosition(int p) {
         this->buff->position = p;
+    }
+
+    inline
+    osu_buffer* GetBuffer() {
+        return this->buff;
     }
 
     inline
@@ -92,7 +103,7 @@ public:
     }
 
 private:
-    osu_buffer* buff;
+    osu_buffer* buff = nullptr;
 };
 }
 

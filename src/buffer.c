@@ -23,6 +23,7 @@ free_buffer(osu_buffer** pBuffer) {
     if ( (*pBuffer)->bytes != NULL )
         free((*pBuffer)->bytes);
 
+    (*pBuffer)->bytes = NULL;
     free (*pBuffer);
     *pBuffer = NULL; // Save Free, prevent USE AFTER FREE
 
@@ -36,8 +37,7 @@ write_uleb128 (osu_buffer* pBuffer, size_t pVal) {
 
     size_t t = 0;
     do {
-        uint8_t byte;
-        byte = (uint8_t) (pVal & 0x7F);
+        uint8_t byte = (uint8_t) (pVal & 0x7F);
         if ((pVal >>= 0x07) != 0)
             byte |= 0x80;
 

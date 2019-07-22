@@ -1,10 +1,9 @@
 #ifndef _H_LIB_OSU_PACKET_ID
 #define _H_LIB_OSU_PACKET_ID
 
-#ifdef __cplusplus
-namespace osu {
-extern "C" {
-#endif
+#include "inc.h"
+
+OSU_NAMESPACE_BEGIN
 
 typedef enum {
     ClientSendUserStatus             = 0x00,
@@ -117,7 +116,4 @@ typedef enum {
 
 #endif
 
-#ifdef __cplusplus
-}
-}
-#endif
+OSU_NAMESPACE_END
