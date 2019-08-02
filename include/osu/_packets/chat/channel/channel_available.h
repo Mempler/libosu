@@ -1,25 +1,25 @@
-#ifndef _H_LIB_OSU__PACKETS_ANNOUNCE
-#define _H_LIB_OSU__PACKETS_ANNOUNCE
+#ifndef _H_LIB_OSU__PACKETS_CHAT_CHANNEL_CHANNEL_AVAILABLE
+#define _H_LIB_OSU__PACKETS_CHAT_CHANNEL_CHANNEL_AVAILABLE
 
-#include "_packet.hpp"
+#include "../../_packet.hpp"
 
 OSU_NAMESPACE_BEGIN
 
-osu_packet* CreateS0x18Announcement(const char* pStr, size_t pLen);
+osu_packet* CreateS0x41ChannelAvailable(const pd_channel* pChannel);
 
 #ifdef __cplusplus
-class S0x18Announce : public SPacket
+class S0x41ChannelAvailable : public SPacket
 {
     public:
+        explicit
         inline
-        S0x18Announce(const std::string& pStr)
+        S0x41ChannelAvailable(pd_channel* pChannel)
         {
-            Packet = CreateS0x18Announcement(pStr.c_str(), pStr.size());
+            Packet = CreateS0x41ChannelAvailable(pChannel);
         }
 
         inline
-        ~S0x18Announce()
-        {
+        ~S0x41ChannelAvailable() {
             if (Packet != nullptr)
                 packet_free(&this->Packet);
             Packet = nullptr;

@@ -3,6 +3,7 @@
 
 #include "../inc.h"
 #include "../packet.h"
+#include "_data.h"
 
 OSU_NAMESPACE_BEGIN
 
